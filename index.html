@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<head>
+<title>DPV SIGIV | Sistema de Información Geográfica Integral Vial</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+crossorigin=""/>
+
+<style>
+body{
+padding: 0;
+margin: 0;
+    }
+html, body, #map {
+height: 100%;
+        }
+        
+/* STYLES FOR TOOLTIP (LABELS) */        
+
+.label {
+  border-color: black; /*NO FUNCIONA DESDE ACA HASTA PADDING-RIGHT*/
+  background: none;
+  fillColor: blue;
+  line-weight: 700; 
+  maxWidth: 100;
+  max-width:1; 
+  labelAnchor: 520, 0; 
+  margin-top: 0px;
+  padding-top: 1px;
+  padding-bottom: 0px;
+  padding-left: 4px;
+  padding-right: 4px;
+background-color: green;
+font-weight: bold;
+color: green; /*NO FUNCIONA*/
+border: transparent; /*NO FUNCIONA*/
+box-shadow: none;
+font-size:10px;
+}
+.label .leaflet-tooltip-content {/*NO FUNCIONA*/
+    border:3px solid red;
+}
+.label .leaflet-popup-tip {/*NO FUNCIONA*/
+    border:6px dashed red;
+}
+
+.leaflet-tooltip{
+    text-align:center;
+    line-height: 0.3;
+    width: 22px;
+    white-space: normal;
+}
+.leaflet-tooltip-top::before {
+  display: none
+}
+
+/* STYLES FOR POP-UP */  
+.leaflet-popup-content-wrapper {
+    border:3px solid black;
+    color: #FFF973;
+}
+div.leaflet-popup-content {
+    text-align:center;
+    border:3px solid black;
+    background: #FFF973;
+}
+.leaflet-popup-tip {
+    border:3px dashed black;
+    background: solid #FFF973
+}
+</style>
+
+<style>
+h2{color:#457845;}
+</style>
+
+<!-- Make sure you put this AFTER Leaflet's CSS -->
+ <script src=" https://unpkg.com/leaflet@1.2.0/dist/leaflet.js "></script>
+		<link rel="stylesheet" href=" https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+		<script src="https://code.jquery.com/jquery-3.2.1.js" ></script>
+ 
+</head>
+
+<body>
+                                                                                        
+<div id="map" style="position: relative; border: solid thin"></div>
+
+<script>
+
+///////////////////////////////////////////////////
+/////////  Mapa con centro en Santa Fe ////////////
+///////////////////////////////////////////////////
+
+var map = L.map('map',{
+zoomSnap: 0.10
+}).setView([-31.25, -61], 7);
+
+//////////////////////////////////////////////////
+//////////////// Mapa Base OSM ///////////////////
+//////////////////////////////////////////////////
+
+L.tileLayer('https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
+	maxZoom: 19,
+    attribution: 'DPV Santa Fe - Área de SIG | © CARTO'
+	}).addTo(map);
+	
+//////////////////////////////////////////////////
+//////////////// Graphic Scale ///////////////////
+//////////////////////////////////////////////////
+
+L.control.scale({
+	metric: true,
+	imperial: false,
+	position: 'bottomright'
+}).addTo(map);
+
+//////////////////////////////////////////////////
+///////////////////  SLD style  //////////////////
+//////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////// 
+////////////////////////////                    /////////////////////////////// 
+//////////////////////////// DPV - Red Vial WMS ///////////////////////////////
+///////////////////////////                     ///////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+ 
+                       ////////////////////////////////////////////////////////////////////////////////////////////////////////
+                       /////(esto esta en el puerto de GEOSERVER DE ADRIAN, hay que cambiar los datos de "var wmsredvial"//////
+                       ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/* var wmsredvial = L.tileLayer.wms('http://66.97.44.194:8080/geoserver/dpv/wms?', {
+    layers: 'dpv_redvial_v20220907',
+    format: 'image/png',
+	transparent: true,
+	version: '1.3.0'
+	}).addTo(map); 
+*/
+
+/////////////////////////////////////////////////////////////////////////////
+////////////////////////////                    /////////////////////////////
+//////////////////////////// DPV - Red Vial WFS /////////////////////////////
+///////////////////////////                     ///////////////////////////// 
+/////////////////////////////////////////////////////////////////////////////
+
+var owsrootUrl = 'http://127.0.0.1:8080/geoserver/SIGIV/wfs';
+
+		var defaultParameters = {
+			service: 'WFS',
+			version: '2.0.0',
+		    request: 'GetFeature',
+			typeName: 'SIGIV:dpv_redvial_v20220907',
+			srsname: 'EPSG:4326',
+			outputFormat: 'application/json',
+		};
+		var parameters = L.Util.extend(defaultParameters);
+
+		var URL = owsrootUrl + L.Util.getParamString(parameters);
+
+/////////////////////////
+///// INICIO Llamada AJAX
+
+		$.ajax({
+			url: URL,
+			success: function (data) {
+			
+
+///////////////////
+/////Estilo OUTLINE				
+
+				var borde = new L.geoJson(data, {                            
+					style: function (feature) {                                                                      
+					return {color: 'black', opacity: 1, weight: 3};
+					}
+				}).addTo(map); 
+
+/////////////////
+/////Zoom OUTLINE
+
+				map.on('zoomend', function () {
+    				currentZoom = map.getZoom();
+    				if (currentZoom >= 7) {
+        				borde.setStyle({weight: 3});
+    				}
+    				else {
+        				borde.setStyle({weight: 0});
+    				}
+				});
+				
+map.on('zoomend', function() {
+    if (map.getZoom() >= 7){
+            map.addLayer(borde);
+    }
+    else {
+            map.removeLayer(borde);
+        }
+});
+
+///////////////////
+/////Estilo CALZADA				
+
+				 var calzada = new L.geoJson(data, {
+				 	style: function (feature) {
+				 		var c;
+				 		switch (feature.properties.dpv_cal) {
+				        case 'Natural':
+				        c = '#ffffff';
+				        break;
+				        case 'Mejorada':
+				        c = '#db6adb';
+				        break;
+				        case 'Pavimentada':
+				        c = '#ff0127';
+				        break;
+				        default:
+				        c = '#000000';
+				        }
+				     return {color: c, opacity: 1, weight: 2};
+				    },
+				    onEachFeature: function(feature, layer) {
+    			 		layer.bindTooltip(feature.properties.nam.toString(), 
+    			 		{permanent: true,
+    			 		 offset: [0, 0],
+    			 		 labelAnchor: [100, 0], //////////ESTA LINEA DUDOSA
+    	                 direction: 'center',
+    	                 sticky: true, 
+    	                 opacity: 1,
+    			 		 className: 'label'
+    			 		}).addTo(map);
+  				 	}
+				 }).bindPopup(function (layer) {
+    					return (layer.feature.properties.fna)
+				 }).addTo(map);
+				 
+
+/*			////INTENTO QUE FUNCIONA UN CUADRADO GRANDE	(https://gis.stackexchange.com/questions/59571/how-to-add-text-only-labels-on-leaflet-map-with-no-icon)
+var marker = new L.marker([-31, -61.1], { 
+				opacity: 0.01
+}); //opacity may be set to zero
+marker.bindTooltip("VAMO ARGENTINAAAA", {permanent: true, className: "my-label", offset: [0, 0],
+				weight: 0.5});
+marker.addTo(map);
+*/
+       
+/////////////////
+/////Zoom CALZADA
+
+				map.on('zoomend', function () {
+    				currentZoom = map.getZoom();
+    				if (currentZoom >= 7) {
+        				calzada.setStyle({weight: 2});
+    				}
+    				else {
+        				calzada.setStyle({weight: 0});
+    				}
+					});
+					
+
+map.on('zoomend', function() {
+    if (map.getZoom() >= 7){
+            map.addLayer(calzada);
+    }
+    else {
+            map.removeLayer(calzada);
+        }
+});
+
+/////////////////
+/////Zoom ETIQUETAS NAM
+
+map.on('zoomstart', function () {
+	try{
+    var zoomLevel = map.getZoom();
+		//alert(zoomLevel);
+		console.log(zoomLevel);
+		//alert(zoomLevel);
+    var tooltip = $('.label');
+		
+		//alert(zoomLevel);
+		console.log("zoomLevel");
+console.log(zoomLevel);
+
+    switch (zoomLevel) {
+        default:
+            tooltip.css('font-size', 0)
+		if(zoomLevel>5)
+		{
+			tooltip.css('font-size', 10);
+		}
+		if(zoomLevel>13)
+		{
+		    tooltip.css('font-size',20);
+		}
+	}
+	}catch(ex)
+	{
+	alert(ex);	
+	}
+});
+
+///////////////////
+/////Estilo CALZADA	2			
+
+				var calzada2 = new L.geoJson(data, {
+					style: function (feature) {
+						var c;
+						switch (feature.properties.dpv_cal) {
+				        case 'Natural':
+				        c = '#ff884b';
+				        break;
+				        case 'Mejorada':
+				        c = '#db6adb';
+				        break;
+				        case 'Pavimentada':
+				        c = '#ff0127';
+				        break;
+				        default:
+				        c = '#000000';
+				    }
+				    return {color: c, opacity: 1, weight: 0};
+				}
+				}).addTo(map);
+
+/////////////////
+/////Zoom CALZADA2
+
+				map.on('zoomend', function () {
+    				currentZoom = map.getZoom();
+    				if (currentZoom < 7) {
+        			    calzada2.setStyle({weight: 1});
+    				}
+    				else {
+        				calzada2.setStyle({weight: 0});
+    				}
+					});
+
+/////////////////////////
+///// CIERRE LLAMADA AJAX
+ 
+
+			}
+		});
+
+		
+</script>
+
+</body>
+</html>
