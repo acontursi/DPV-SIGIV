@@ -21,8 +21,12 @@ Director General de Programación: Ing. Marcelo David.
 
 Jefe de División Técnica: Lic. Adrián Contursi Reynoso.
 
-Prof. Andrés Aguirre (Pasante UNL, 2022-2023)
+Prof. Andrés Aguirre
+- Contratado, 2023
+- Pasante UNL, 2022-2023
 
-Emiliano Guipponi (Pasante UTN, 2017-2019)
+Emiliano Guipponi
+- Pasante UTN, 2017-2019
 
-Lumila Calvi (Pasante UNL, 2017-2018)
+Lumila Calvi
+- Pasante UNL, 2017-2018
