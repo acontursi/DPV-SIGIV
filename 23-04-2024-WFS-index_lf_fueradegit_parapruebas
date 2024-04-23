@@ -1,1 +1,1148 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        
+    <title>DPV SIGIV | Sistema de Información Geográfica Integral Vial</title>
 
+        <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+    integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
+
+    <link rel="stylesheet" href="style.css"> 
+
+        
+    <style>
+
+body {
+    padding: 0;
+    margin: 0;
+}
+html, body, #map {
+    height: 100%;
+}
+
+.legend {
+    padding: 6px 8px;
+    font: 14px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255, 255, 255, 0.8);
+    /*box-shadow: 0 0 100px rgba(0, 0, 0, 0.2);*/
+    border-radius: 10px;
+    border:1px solid black;
+    line-height: 20px;
+    color: black;
+}
+.legend h4 {
+    text-align: left;
+    font-size: 16px;
+    margin: 2px 40px 8px;
+    color: black;
+}
+.legend span {
+    position: relative;
+    bottom: 3px;
+}
+.legend i {
+    width: 20px;
+    height: 5px;
+    float: left;
+    margin: 0 8px 0 0;
+    opacity: 0.7;
+    border:2px solid black;
+}
+/*.legend i.icon {
+    background-size: 18px;
+    background-color: rgba(255, 255, 255, 1);
+}*/
+.box{
+    position: absolute;
+    top: 10%;
+    z-index: 520;
+    text-align: center;
+    width: 300px;
+    height: 120px;
+    left: 75%;
+    margin-left: -75px; /*----- half of the width*/ 
+    border: 1px solid black;
+    background-color: rgb(230, 218, 62);
+}
+
+#contenedor {
+    text-align: left;
+    width: 100%;
+    height: 100%;
+    margin: auto;
+}
+#map {
+    width: 60%;
+    float:left;
+}
+#dashboard {
+    width: 40%;
+    float:right;
+}
+#titulo1 {
+    text-align: center;
+    width: 100%;
+    height: 0%;
+    margin-left: 1%;
+    margin-top: 1%;
+    margin-bottom:0%
+}
+/*#estadisticas {
+    width: 55%;
+    float:left;
+}*/
+.clearfix:after {
+ content: "";
+ display: table;
+ clear: both;
+}
+/* ESTILOS PARA GRÁFICOS */
+/* *{
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+      }
+      .chartMenu p {
+        padding: 10px;
+        font-size: 20px;
+      }*/
+      /*.chartCard {
+        width: 100%;
+        height: 20px;
+        background: rgba(54, 162, 235, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }*/
+    
+/*estilo del selector independiente      
+.sel_zon {                        
+    width: 25%;
+    height: 20%;
+    padding: 5px;
+    border-radius: 10px;
+    border: solid 1px rgb(65, 67, 68);
+    background: rgb(180, 180, 180);
+    
+    padding-top: 10px;
+    padding-left: 10px;
+    margin-left: 150px;
+    float: right;
+}*/
+/*estilo gráfico de dona*/
+.chartBox2 {  
+    height: 400px;
+    width: 50px;
+    border-radius: 10px;
+    border: solid 1px rgb(180, 135, 10);
+    background-color: rgba(255, 255, 255, 0.596);
+    margin-left: 25%;
+    margin-top: 0%;
+    margin-bottom:0%
+}
+/*estilo gráfico de barras*/
+.chartBox {                        
+    width: 450px;
+    height: 225px;
+    padding: 5px;
+    border-radius: 10px;
+    border: solid 1px rgb(180, 135, 10);
+    background: white;
+    margin: auto;
+    margin-top: 0%;
+    margin-bottom:0%
+}
+.sidebar{
+    width: 15%;
+    flex: 25%;
+    /*background: #ccc;*/
+    margin-top: 0%;
+    margin-left: 8%;
+    margin-bottom:0% 
+}
+.column {
+    flex: 75%
+}
+#pie_pagina {
+    text-align: center;
+    width: 100%;
+    height: 0%;
+    margin-top: 0%;
+    margin-bottom:0%
+}
+
+    </style>
+    </head>
+
+<body>
+    <!-- CONTENEDOR -->
+    <div id="contenedor" class="clearfix">
+
+        <div id="map"></div>
+
+        <div id="dashboard">
+            <div id="titulo1">
+            <p  >
+                <FONT SIZE=3> <b>SIGIV</b></FONT> <FONT SIZE=3> <b>D.P.V. SANTA FE</b></FONT> 
+            </div>
+            <!--
+            <div id= "zonas">
+                <p> <FONT SIZE=3 style="float:left; margin: 5px 20px 0 10px;"> <b>Zonas</b></FONT> </p>
+            </div>
+            <div class="searchbar" style="margin: 10px 10 0 50px;"> 
+                <input type="text" 
+                       placeholder="Search"> 
+            </div>
+            -->
+            <!-- <div id= "estadisticas">
+                <p style="margin: 25px 20px 0 10px;"> <FONT SIZE=3> <b>Estadísticas</b></FONT> </p>
+                
+                <div class="items"> 
+                    <div class="item1"> 
+                        <h3 class="t-op-nextlvl">Zona 1</h3>  
+                    </div> 
+
+                    <div class="item1"> 
+                        <h3 class="t-op-nextlvl">Zona 2</h3> 
+                </div>
+                
+            </div>-->
+
+            <!-- Selector de zonas independiente-->
+            <!--<div>
+                <select id="selec_zon" class= "sel_zon" onchange="cambiozona()">                       
+                    <option value="zona_1">Zona 1</option>                             
+                    <option value="zona_2">Zona 2</option>
+                    <option value="zona_3">Zona 3</option>
+                    <option value="zona_4">Zona 4</option>
+                    <option value="zona_5">Zona 5</option>
+                    <option value="zona_6">Zona 6</option>
+                    <option value="zona_7">Zona 7</option>
+                    <option value="zona_8">Zona 8</option>
+                    <option value="zona_9">Zona 9</option>
+                    <option value="zona_10">Zona 10</option>
+                  </select>
+            </div>-->            
+            
+            <!-- contenedores de gráficos-->
+            
+                    <div class="chartBox2" style="position: relative; height: 10%; width:52%">
+                        <canvas id= "myChart2" style="position: center;"></canvas>
+                    </div>
+                
+                <canvas id="barras_zonas" width="100" height="50" style="margin-top: -110px;"></canvas>
+                <!--<div class="chartCard">-->
+                        <div class="sidebar">
+                            <select onchange="cambiozona(this)">                       
+                                <option value="z1">Zona 1</option>                             
+                                <option value="z2">Zona 2</option>
+                                <option value="z3">Zona 3</option>
+                                <option value="z4">Zona 4</option>
+                                <option value="z5">Zona 5</option>
+                                <option value="z6">Zona 6</option>
+                                <option value="z7">Zona 7</option>
+                                <option value="z8">Zona 8</option>
+                                <option value="z9">Zona 9</option>
+                                <option value="z10">Zona 10</option>
+                            </select>
+                        </div>
+                        <div class="column">
+                            <div class="chartBox">
+                                <canvas id="myChart" ></canvas>
+                        <!-- Selector de zonas del gráfico de barras
+                    <select id="zonax" class= "sel_zon" onchange="cambiozona()">                       
+                        <option value="zona_1">Zona 1</option>                             
+                        <option value="zona_2">Zona 2</option>
+                        <option value="zona_3">Zona 3</option>
+                        <option value="zona_4">Zona 4</option>
+                        <option value="zona_5">Zona 5</option>
+                        <option value="zona_6">Zona 6</option>
+                        <option value="zona_7">Zona 7</option>
+                        <option value="zona_8">Zona 8</option>
+                        <option value="zona_9">Zona 9</option>
+                        <option value="zona_10">Zona 10</option>
+                    </select>-->
+                            </div>
+                        </div>
+            <div id="pie_pagina">
+                <p> <FONT SIZE=1> Dirección General de Programación - Área Sistemas de Información Geográfica </FONT> </p>
+            </div>       
+        </div>
+
+    </div>
+
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src=" https://unpkg.com/leaflet@1.9.3/dist/leaflet.js "></script>
+    <link rel="stylesheet" href=" https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <script src="https://code.jquery.com/jquery-3.2.1.js" ></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script> <!-- para trabajar con fechas-->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.1/chart.min.js"></script> -->
+    <script>
+
+const datos_kmcalzada = [                               
+    {
+        calzada: 'Pavimentada', zonax: {z1:212.646, z2:370.098, z3:630.505, z4:388.665 , z5:494.898, z6:892.468 , z7:373.927 , z8:176.989 , z9:164.83 , z10:511.632}
+    },
+    {
+        calzada: 'Mejorada', zonax: {z1: 11.98, z2: 209.618, z3:317.615, z4:106.509 , z5:70.19 , z6:84.108 , z7:18.874 , z8:39.62 , z9:27.899 , z10:50.789}
+    },
+    {
+        calzada: 'Natural', zonax: {z1: 534.648, z2: 988.241, z3:519.772, z4:672.867 , z5:725.431 , z6:1080.43 , z7:916.134 , z8:1224.73 , z9:1193.98 , z10:211.584}
+    },
+]
+const data = {
+        //labels: ['Pavimentada', 'Mejorada', 'Natural'],
+        //labels: labels,    
+        datasets: [{
+            //label: 'Kms. de calzada por zona',
+            //data: [50, 12, 6, 9, 12, 3, 9],
+            data: datos_kmcalzada,
+            barThickness: 75,
+            borderSkipped: "bottom",
+            borderRadius: 10,
+            backgroundColor: [
+                '#ff0127',
+                '#db6adb',
+                '#ffffff'
+            ],
+            borderColor: [
+                'black',
+                'black',
+                'black',
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    // config 
+    const config = {
+        type: 'bar',
+        data,             // tambien funciona como:  data:data,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false,
+                    position: 'top'
+                },
+                title: {
+                    display: true,
+                    text: 'Total de km. por tipo de calzada según zona'
+                }
+            },
+            interaction: {
+                intersect: true,
+            },
+            scales: {
+                y: {
+                    min: 0,
+                    max: 1300,
+                    beginAtZero: true
+                }
+            },
+            hoverBackgroundColor: [
+                "#eacc07"
+            ]
+        }
+    };
+          
+    // render init block
+    const myChart = new Chart(
+        document.getElementById('myChart'),
+        config
+        );
+        
+        function cambiozona(option) {
+            console.log(option.value);
+            const tipoCalzada = option.value;
+            const zonaData = datos_kmcalzada.map((item) => {      // Buscamos los datos de todas las zonas para el tipo de calzada seleccionado
+                const valorZona = item.zonax[tipoCalzada];
+                return { x: item.calzada, y: valorZona !== undefined ? valorZona : 0 };
+            });
+            if (zonaData.every(data => data.y !== undefined)) {   // Aca vemos si se encontraron datos para el tipo de calzada
+                myChart.data.datasets[0].data = zonaData;         // Aca se actualziza el gráfico con los datos de todas las zonas
+            }
+            myChart.update();
+        }
+
+
+
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////
+////////////DATOS DE TOTALES para gráficos///////////////////               /////estos datos son erroneos!!!!!!/////
+/////////////////////////////////////////////////////////////
+    // setup 
+    const data2 = {
+        labels: ['Pavimentada (30%)', 'Natural (60%)', 'Mejorada (10%)'],
+        datasets: [{                 
+            data: [4216.658, 8067.817, 937.202], 
+            hoverBackgroundColor: '#eacc07',
+            backgroundColor: [
+                '#ff0127',
+                '#ffffff',
+                '#db6adb'
+            ],
+            borderColor: [
+                'black',
+                'black',
+                'black',
+            ],
+            borderWidth: 2,
+            hoverOffset: 4,
+        }]
+    };
+
+/////////////////////////////////////////////////////////////
+////////////TOTALES GENERALES x calzada (dona)///////////////
+/////////////////////////////////////////////////////////////
+    // config 
+    const config_dona = {
+        type: 'doughnut',
+        data: data2,
+        options: {
+            plugins:{
+                title: {
+                    display: true,
+                    text: 'Total de km. por tipo de calzada'
+                },
+                legend: {
+                    display: true,
+                    position: 'right',
+                    fullSize: true,
+                    labels:{
+                        padding: 4,
+                        boxHeight: 5,
+                        boxWidth: 25
+                    },
+                },
+            },
+            interaction: {
+                intersect: true,
+            },
+            responsive: true
+        }
+    };
+    // render init block
+    const myChart2 = new Chart(
+        document.getElementById('myChart2'),
+        config_dona
+        );
+
+/*
+/////////////////////////////////////////////////////////////
+////////////TOTALES GENERALES x calzada (barras)/////////////
+/////////////////////////////////////////////////////////////
+    // config 
+    const config_barra = {
+        type: 'bar',
+        data: data
+    };
+          
+    // render init block
+    const myChart = new Chart(
+        document.getElementById('myChart'),
+        config_barra
+        );
+
+/////////////////////////////////////////////////////HASTA ACA FUNCIONA CON TOTALES AMBOS GRÁFICOS PERO SIN SELECTOR
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+*/
+
+///////////////////////////////////////////////////////////////
+////////////TOTAL DE KM DE CALZADA x zona (barras)/////////////                      /////estos datos son erroneos!!!!!!/////
+///////////////////////////////////////////////////////////////
+/*
+    // setup 
+    const data = {
+        labels: ['Pavimentada', 'Natural', 'Mejorada'],
+        datasets: [{
+            label: 'Kms. de calzada por zona',
+            //data: [50, 12, 6, 9, 12, 3, 9],
+            data: [
+            {id: 'Pavimentada', calzada:
+                {
+                    zona_1: 613.810,
+                    zona_2: 600.586,
+                    zona_3: 1091.87, 
+                    zona_4: 656.29,
+                    zona_5: 866.47,
+                    zona_6: 2262.059,
+                    zona_7: 1055.978,
+                    zona_8: 490.487, 
+                    zona_9: 763.41,
+                    zona_10: 1099.84
+                }
+            },
+            {id: 'Natural', calzada:
+                {
+                    zona_1: 534.647,
+                    zona_2: 988.239,
+                    zona_3: 519.770,
+                    zona_4: 672.867,
+                    zona_5: 725.431,
+                    zona_6: 1080.430,
+                    zona_7: 916.132,
+                    zona_8: 1224.730,
+                    zona_9: 1193.990,
+                    zona_10: 211.585
+                }
+            },
+            {id: 'Mejorada', calzada:
+                {
+                    zona_1: 11.981,
+                    zona_2: 209.617,
+                    zona_3: 317.616,
+                    zona_4: 106.509,
+                    zona_5: 70.190,
+                    zona_6: 84.109,
+                    zona_7: 18.875,
+                    zona_8: 39.619,
+                    zona_9: 27.899,
+                    zona_10: 50.787
+                }
+            }],
+            backgroundColor: [
+                'rgba(255, 26, 104, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 26, 104, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+            ],
+            borderWidth: 1
+        }]
+    };
+    // config 
+    const config = {
+        type: 'bar',
+        data: data,
+        options: {
+            parsing: {
+                xAxisKey: 'id',
+                yAxisKey: 'calzada.zona_6.Pavimentada'
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    };
+          
+    // render init block
+    const myChart = new Chart(
+        document.getElementById('myChart'),
+        config
+        );
+
+    function cambiozona(){
+        const zonax = document.getElementById('zonax').value;
+        console.log(zonax);
+        myChart.config.options.parsing.yAxisKey = `calzada.${zonax}`;
+        myChart.update();
+    }
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+*/
+
+
+/*
+/////////////////////////////////////////////////                                ///// ESTE ES EL QUE FUNCIONA con el 
+/////////////////////////////////////////////////                                /////SELECTOR pero muestra solo de una categoria
+                                                                               /////estos datos son erroneos!!!!!!/////
+// setup 
+//const labels = ['Pavimentada', 'Mejorada', 'Natural']
+const data = {
+        //labels: ['Pavimentada', 'Mejorada', 'Natural'],
+        //labels: labels,    
+        datasets: [{
+            label: ['Kms. de calzada por zona'],
+            //data: [50, 12, 6, 9, 12, 3, 9],
+            data: [
+            {id: 'Pavimentada', calzada:
+                {
+                    zona_1: {pavimentada:613.810},
+                    zona_2: {pavimentada:600.586},
+                    zona_3: {pavimentada:1091.87}, 
+                    zona_4: {pavimentada:656.29},
+                    zona_5: {pavimentada:866.47},
+                    zona_6: {pavimentada:2262.059},
+                    zona_7: {pavimentada:1055.978},
+                    zona_8: {pavimentada:490.487}, 
+                    zona_9: {pavimentada:763.41},
+                    zona_10: {pavimentada:1099.84},
+                }
+            },
+            {id: 'Mejorada', calzada:
+                {
+                    zona_1: {mejorada:11.981},
+                    zona_2: {mejorada:209.617},
+                    zona_3: {mejorada:317.616},
+                    zona_4: {mejorada:106.509},
+                    zona_5: {mejorada:70.190},
+                    zona_6: {mejorada:84.109},
+                    zona_7: {mejorada:18.875},
+                    zona_8: {mejorada:39.619},
+                    zona_9: {mejorada:27.899},
+                    zona_10: {mejorada:50.787},
+                }
+            },
+            {id: 'Natural', calzada:
+                {
+                    zona_1: {natural:534.647},
+                    zona_2: {natural:988.239},
+                    zona_3: {natural:519.770},
+                    zona_4: {natural:672.867},
+                    zona_5: {natural:725.431},
+                    zona_6: {natural:1080.430},
+                    zona_7: {natural:916.132},
+                    zona_8: {natural:1224.730},
+                    zona_9: {natural:1193.990},
+                    zona_10: {natural:211.585},
+                }
+            }],
+            backgroundColor: [
+                '#ff0127',
+                '#db6adb',
+                '#ffffff'
+            ],
+            borderColor: [
+                'black',
+                'black',
+                'black',
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    // config 
+    const config = {
+        type: 'bar',
+        data,             // tambien funciona como:  data:data,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top'
+                },
+                title: {
+                    display: true,
+                    text: 'Chart.js Bar Chart'
+                }
+            },
+            parsing: {
+                xAxisKey: 'id',
+                yAxisKey: [
+                    'calzada.zona_1.pavimentada'
+            ]
+            },
+            interaction: {
+                intersect: true,
+            },
+            scales: {
+                y: {
+                    min: 0,
+                    max: 2500,
+                    beginAtZero: true
+                }
+            },
+            hoverBackgroundColor: [
+                "#eacc07"
+            ]
+        }
+    };
+          
+    // render init block
+    const myChart = new Chart(
+        document.getElementById('myChart'),
+        config
+        );
+
+    function cambiozona(){
+        const zonax = document.getElementById('zonax').value;
+        console.log(zonax);
+        myChart.config.options.parsing.yAxisKey = `calzada.${zonax}.pavimentada`,          
+        myChart.config.options.parsing.yAxisKey = `calzada.${zonax}.mejorada`,
+        myChart.config.options.parsing.yAxisKey = `calzada.${zonax}.natural`
+        myChart.update(myChart);
+    }
+        //OPCIONES EN ESTA SECCION (FUNCTION CAMBIO ZONA)
+                //1)Si dejamos esto: myChart.data.datasets.forEach(data => config.options.parsing.yAxisKey = `calzada.${zonax}.pavimentada`) 
+                //y reemplzamos las tres lineas de las tres calzadas toma solo a pavimentada y cambia esos datos
+
+                //2) si reemplazamos los tres MYCHART.CONFIG por esto sigue el mismo problema: 
+                //myChart.config.options.parsing.yAxisKey = [
+                //`calzada.${zonax}.pavimentada`,
+                //`calzada.${zonax}.mejorada`,
+                //`calzada.${zonax}.natural`];
+
+*/
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+
+
+
+/*
+/////////////////////////////////////////////////                  /////estos datos son erroneos!!!!!!/////
+///////////////////////////////////////////////// 
+/////////////GRAFICO FUNCIONA CORRECTAMENTE (se tachan barras y colores por default. Sin usarse el selector)
+// setup 
+const data = {
+        labels: ['Pavimentada', 'Mejorada', 'Natural'],
+        datasets: [
+            {
+                label: 'Zona 1',
+                data: [613.810, 11.981, 534.647],   
+            },
+            {
+                label: 'Zona 2',
+                data: [600.586, 209.617, 988.239],          
+            },
+            {
+                label: 'Zona 3',
+                data: [1091.87, 317.616, 519.770],
+            },
+            {
+                label: 'Zona 4',
+                data: [656.29, 106.509, 672.867],
+            },
+            {
+                label: 'Zona 5',
+                data: [866.47, 70.190, 725.431],
+            },
+            {
+                label: 'Zona 6',
+                data: [2262.059, 84.109, 1080.430],
+            },
+            {
+                label: 'Zona 7',
+                data: [1055.978, 18.875, 916.132],
+            },
+            {
+                label: 'Zona 8',
+                data: [490.487, 39.619, 1224.730],
+            },
+            {
+                label: 'Zona 9',
+                data: [763.41, 27.899, 1193.990],
+            },
+            {
+                label: 'Zona 10',
+                data: [1099.84, 50.787, 211.585],
+            }
+        ]
+    };   
+const config = {
+    type: 'bar',
+    data,          
+    options: {
+        scales: {
+            y: {
+                min: 0,
+                max: 2500,
+                beginAtZero: true
+            }
+        }
+    }
+};
+
+// render init block
+const myChart = new Chart(
+    document.getElementById('myChart'),
+    config
+);
+*/
+/////////////////////////////////////////////////
+/////////////////////////////////////////////////
+
+
+// VARIABLES
+    var visor               // Visor
+    var mapas_base          // Mapas Base
+    var mb_carto            // Mapa Base de CARTO
+    var mb_esri_satelite    // Mapa Base Satelital de ESRI
+    var mb_ign_argenmap     // Mapa Base IGN
+    var mb_ign_topografico  // Mapa Base Topográfico de IGN
+    var redvial
+    var calzada             // Calzadas
+    var zonas
+
+//  MAPAS BASE
+// Mapa Base CARTO
+var mb_carto = L.tileLayer('https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: 'DPV Santa Fe - Área de SIG | © CARTO'
+});
+  
+// Mapa Base ESRI Satelite
+var mb_esri_satelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 19,
+    attribution: '© ESRI Imagery/Satellite'
+});
+
+// Mapas Base IGN
+var mb_ign_argenmap = L.tileLayer('https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{-y}.png', {
+    maxZoom: 19,
+    attribution: '<a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> | <a href="http://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2" target="_blank">Instituto Geográfico Nacional</a> + <a href="http://www.osm.org/copyright" target="_blank">OpenStreetMap</a>'
+});
+
+var mb_ign_topografico = L.tileLayer('https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/mapabase_topo@EPSG%3A3857@png/{z}/{x}/{-y}.png', {
+    maxZoom: 19,
+    attribution: '<a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> | <a href="http://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2" target="_blank">Instituto Geográfico Nacional</a> + <a href="http://www.osm.org/copyright" target="_blank">OpenStreetMap</a>'
+});   
+
+// Mapas Base
+var mapas_base = {
+   "CARTO": mb_carto,
+   "ESRI: Satellite": mb_esri_satelite,
+   "IGN: Argenmap": mb_ign_argenmap,
+   "IGN: Topográfico": mb_ign_topografico
+};
+
+//  MAPA CENTRADO EN SANTA FE
+var visor = L.map('map',{
+    zoomSnap: 0.1,
+    layers: [mb_carto],
+    renderer: L.canvas({ tolerance: 50 })    //---> propiedad que amplia el radio de selección con el mouse para todas las capas
+}).setView([-31.25, -61], 6.9);
+
+/*var canvasRenderer = L.canvas({padding: 5, tolerance: 50});*/  //---> variable que amplia el radio de selección con el mouse para la capa que llame esta "var"
+
+var layerControl = L.control.layers(mapas_base).addTo(visor);
+
+// ESCALA
+L.control.scale({
+    metric: true, imperial: false,
+    position: 'bottomright'
+}).addTo(visor);
+
+
+// ESTILO PARA CALZADAS
+function style(feature) {
+    var c;
+    switch (feature.properties.dpv_cal) {
+        case 'Natural': c = '#ffffff'; break;
+        case 'Mejorada': c = '#db6adb'; break;
+        case 'Pavimentada': c = '#ff0127'; break;
+        default: c = '#000000';
+    }
+    return {color: c, opacity: 1, weight: 2};
+}
+	var highlight = {
+		'fillColor': '',
+        /*'color': 'yellow',*/    //---> si se activa usa el color amarillo, 
+                                  //pero si usamos solo el parámetro 'fillColor' permite resaltar con el propio color del vector, además
+                                  //no desaparece la seleccion con el zoom pero deja de hacer efecto el 'height'
+		'weight': 10,
+		'opacity': 1,
+        /*'permanent': true*/     //---> no funciona
+	};
+
+
+// Resaltar seleccion
+/*function highlightFeature(e) {             ------ > POR MAS QUE ESTÉ COMENTADO EL HIGHLIGHT FUNCIONA
+    var layer = e.target;
+    layer.setStyle({
+    });
+    if (!L.Browser.ie && !L.Browser.opera) {
+        layer.bringToFront();
+    }
+}
+function resetHighlight(e) {
+    calzada.resetStyle(e.target);
+}
+function onEachFeature(feature, layer) {
+    layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight
+    });
+}*/
+
+// RED VIAL
+var redvial = 'http://10.7.20.214:8080/geoserver/dpv_sigiv/wfs?';
+    var defaultParameters = {
+        service: 'WFS',
+        version: '2.0.0',
+        request: 'GetFeature',
+        typeName: 'dpv_sigiv:sf_dpv_dnv_redvial_221227_5347',  ///// ACA PONER EL NOMBRE DE LA CAPA DE RUTAS CUANDO LA SUBA
+        srsname: 'EPSG:4326', /// ACA HAY QUE VER SI ESTO ES EN ESTE SISTEMA O EL DE LA CAPA
+        outputFormat: 'application/json'
+    };
+    var parameters = L.Util.extend(defaultParameters);
+    var URL = redvial + L.Util.getParamString(parameters);
+
+// INICIO Llamada AJAX
+var ajax_rutas = $.ajax({
+    url: URL,
+    success: function (data) {
+// OUTLINE ---> estilo borde (documentación leaflet (https://leafletjs.com/reference.html#path-option) y posts leídos comentan que no se puede trabajar el "edge")
+    var outline = new L.geoJson(data, {                           
+        style: function (feature) {
+            return {color: 'black', opacity: 1, weight: 3};
+        }
+    }).addTo(visor);
+
+// OUTLINE ---> zoom
+    visor.on('zoomend', function () {
+        currentZoom = visor.getZoom();
+        if (currentZoom >= 7) {
+            outline.setStyle({weight: 3});
+        }
+        else {
+            outline.setStyle({weight: 0});
+        }
+    });
+
+    visor.on('zoomend', function() {
+        if (visor.getZoom() >= 7){
+            visor.addLayer(outline);
+        }		
+        else {
+            visor.removeLayer(outline);
+        }
+    });
+
+// CALZADA ---> estilo
+    var calzada = new L.geoJson(data, {
+        pane: "calzadaPane",
+        style: style,
+        onEachFeature: function (feature, layer) {
+            layer.on("click", function (e) {
+                calzada.setStyle(style); //setea segun colores de la función "style" declarada previamente
+                layer.setStyle(highlight);  //permite la selección con la variable "highlight" de la función "sytle"
+            });
+        },
+        
+        /*                                                  ---> COMENTADO porque establecimos una funcion de estilo por fuera de la variable
+        style: function (feature) {
+            var c;
+            switch (feature.properties.dpv_cal) {
+                case 'Natural': c = '#ffffff'; break;
+                case 'Mejorada': c = '#db6adb'; break;
+                case 'Pavimentada': c = '#ff0127'; break;
+                default: c = '#000000';
+            }
+            return {color: c, opacity: 1, weight: 2};
+        },
+        pane: "calzadaPane",
+        onEachFeature: function (feature, layer) { /////////// ACTIVADO para HIGHLIGTH OVER
+            layer.on('mouseover', function () {
+                this.setStyle({
+                    stroke: true,
+                    opacity: 3,                                   
+                    weight: 3,
+				    color: 'yellow',
+				    dashArray: '',
+				    fillOpacity: 1
+                });
+            });
+            layer.on('mouseout', function () {
+                calzada.resetStyle(this);
+            });
+        }*/
+    }).bindPopup(function (layer) {                                           //---> PROPIEDAD PARA POP-UP
+        return ('<b>' + layer.feature.properties.fna + '</b>' + '<br>' +
+        '<FONT COLOR="grey">' + '<b>' +' Long: ' + '</b>' + '</FONT>' + layer.feature.properties.len + ' km.' + '<br>' +
+        '<FONT COLOR="grey">' + '<b>' +' Inicio de tramo: ' + '</b>' + '</FONT>' + layer.feature.properties.dpv_tram_i + '<br>' +
+        '<FONT COLOR="grey">' + '<b>' + ' Fin de tramo: ' + '</b>' + '</FONT>' +layer.feature.properties.dpv_tram_f + '<br>' +
+        '<FONT COLOR="grey">' + '<b>' + ' Interrupción: ' + '</b>' + '</FONT>' +layer.feature.properties.dpv_itr)      
+    }).addTo(visor);
+    /*layerControl.addOverlay(calzada, "Calzada");*/
+
+// CALZADA ---> zoom
+    visor.on('zoomend', function () {
+        currentZoom = visor.getZoom();
+        if (currentZoom >= 7) {
+            calzada.setStyle({weight: 2});
+        }
+        else {
+            calzada.setStyle({weight: 0});
+        }
+    });
+
+    visor.on('zoomend', function() {
+        if (visor.getZoom() >= 7){
+            visor.addLayer(calzada);
+        }
+        else {
+            visor.removeLayer(calzada);
+        }
+    });
+
+// ETIQUETAS "NAM" ---> zoom
+    visor.on('zoomstart', function () {
+        try{
+            var zoomLevel = visor.getZoom();
+            console.log(zoomLevel);
+            var tooltip = $('.label');
+            console.log("zoomLevel");
+            console.log(zoomLevel);
+            switch (zoomLevel) {
+                default: tooltip.css('font-size', 0)
+                if(zoomLevel>5) {
+                    tooltip.css('font-size', 10);
+                }
+                if(zoomLevel>13)
+                {
+                    tooltip.css('font-size',20);
+                }
+            }
+        }catch(ex)
+        {
+            alert(ex); 
+        }
+    });
+// CIERRE LLAMADA AJAX
+}
+});
+
+// ZONAS
+var zonas = 'http://10.7.20.214:8080/geoserver/dpv_sigiv/wfs?';
+    var defaultParameters = {
+        service: 'WFS',
+        version: '2.0.0',
+        request: 'GetFeature',
+        typeName: 'dpv_sigiv:zonas',
+        srsname: 'EPSG:4326',
+        outputFormat: 'application/json',
+    };
+    var parameters = L.Util.extend(defaultParameters);
+    var URL = zonas + L.Util.getParamString(parameters);
+
+var style_zonas = /*{
+    fillColor: "orange",    ///---> relleno color
+    color: "black",          ///---> borde color
+    weight: 0.5, 				///---> borde ancho
+    opacity: 1,             ///---> borde opacidad
+    fillOpacity: 0.1          ///---> relleno opacidad
+};*/ ///---> Un solo estilo par la capa (poniendo en "style" de la capa: style: (style_zonas), onEachFeature....)
+
+// INICIO Llamada AJAX
+$.ajax({
+	url: URL,
+	success: function (data) {		
+			var zonas = new L.geoJson(data, {
+                style: function (feature) {
+            var z;
+            switch (feature.properties.zona) {
+                case 'RECONQUISTA': c = 'grey'; break;
+                case 'SAN CRISTOBAL': c = 'blue'; break;
+                case 'RAFAELA': c = 'green'; break;
+                case 'SAN JAVIER': c = 'brown'; break;
+                case 'TOSTADO': c = 'pink'; break;
+                case 'EL TREBOL': c = 'orange'; break;
+                case 'ROSARIO': c = 'lightblue'; break;
+                case 'VENADO TUERTO': c = 'yellow'; break;
+                case 'VERA': c = 'purple'; break;
+                case 'LA CAPITAL': c = 'black'; break;
+                default: c = '#000000';
+            }
+            return {color: c, opacity: 1, weight: 0.5};
+        },
+        onEachFeature: function(feature, layer) {
+        },
+        pane: "zonasPane"
+    }).bindPopup(function (layer) {
+        return (`<b> Zona: </b>` + layer.feature.properties.zona + 
+                `<b></br> N°: </b>` + layer.feature.properties.dpv_zona			   ///---> Si pondría esto: '</br>' +  antes del 'iddpv' me genera un espacio vacío arriba del titulo del PopUp
+    	)
+    }).addTo(visor).bringToBack();
+layerControl.addOverlay(zonas, "Zonas");
+				 						
+/////////////////////////
+///// CIERRE LLAMADA AJAX
+			}
+		});
+
+// DEPARTAMENTOS
+var departamentos = 'http://10.7.20.214:8080/geoserver/dpv_sigiv/wfs?';
+    var defaultParameters = {
+        service: 'WFS',
+        version: '2.0.0',
+        request: 'GetFeature',
+        typeName: 'dpv_sigiv:dptos',
+        srsname: 'EPSG:4326',
+        outputFormat: 'application/json',
+    };
+    var parameters = L.Util.extend(defaultParameters);
+    var URL = zonas + L.Util.getParamString(parameters);
+
+// INICIO Llamada AJAX
+$.ajax({
+	url: URL,
+	success: function (data) {		
+			var departamentos = new L.geoJson(data, {
+                style: function (feature) {
+                    var z;
+                    switch (feature.properties.dpto) {
+                        case '9 de Julio': z = 'brown'; break;
+                        case 'Belgrano': z = 'lightblue'; break;
+                        case 'Caseros': z = 'green'; break;
+                        case 'Castellanos': z = 'purple'; break;
+                        case 'Constitución': z = 'yellow'; break;
+                        case 'Garay': z = 'pink'; break;
+                        case 'General Lopez': z = 'grey'; break;
+                        case 'General Obligado': z = 'blue'; break;
+                        case 'Iriondo': z = 'brown'; break;
+                        case 'La Capital': z = 'black'; break;
+                        case 'Las Colonias': z = 'lightblue'; break;
+                        case 'Rosario': z = 'black'; break;
+                        case 'San Cristobal': z = 'green'; break;
+                        case 'San Javier': z = 'red'; break;
+                        case 'San Jerónimo': z = 'blue'; break;
+                        case 'San Justo': z = 'orange'; break;
+                        case 'San Lorenzo': z = 'lightblue'; break;
+                        case 'San Martin': z = 'red'; break;
+                        case 'Vera': z = 'yellow'; break;
+                        default: z = '#000000';
+                    }
+                    return {color: z, opacity: 0.1, fillOpacity: 0.1, weight: 1};
+                },
+				onEachFeature: function(feature, layer) {
+                },
+                pane: "departamentoPane"
+			}).bindPopup(function (layer) {
+    				return (`<b> Dpto.: </b>` + layer.feature.properties.dpto
+                    )    
+			}).addTo(visor).bringToBack();
+			layerControl.addOverlay(departamentos, "Departamentos");
+				 						
+/////////////////////////
+///// CIERRE LLAMADA AJAX
+			}
+		});
+
+/////////////////////////
+//////ORDER LAYERS - Panes               ---> It creates necessary panes in correct order (i.e. "bottom-most" first).
+visor.createPane("departamentoPane");
+visor.createPane("zonasPane");
+visor.createPane("calzadaPane");
+
+/////////////////////////
+//////LEGEND Rutas
+var legend = L.control({ position: "bottomleft" });
+legend.onAdd = function(visor) {
+  var div = L.DomUtil.create("div", "legend");
+  div.innerHTML += "<h4>Red Vial</h4>";
+  div.innerHTML += '<i style="background: #FF0127"></i><span>Pavimentada</span><br>';
+  div.innerHTML += '<i style="background: #DB6ADB"></i><span>Mejorada</span><br>';
+  div.innerHTML += '<i style="background: #ffffff"></i><span>Natural</span><br>';
+  return div;
+};
+legend.addTo(visor);
+
+</script>
+
+</body>
+</html>
