@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        
+    <title>DPV SIGIV | Sistema de Información Geográfica Integral Vial</title>
+
+        <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+    integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
+
+    <link rel="stylesheet" href="style.css"> 
+
+        
+    <style>
+
+
+/*---------------*/
+/* --- DIVs --- */
+/*-------------*/
+
+/*.box{
+    position: absolute;
+    top: 10%;
+    z-index: 520;
+    text-align: center;
+    width: 300px;
+    height: 120px;
+    left: 75%;
+    margin-left: -75px; ----- half of the width 
+    border: 1px solid black;
+    background-color: rgb(230, 218, 62);
+}*/
+
+body {
+    padding: 0;
+    margin: 0;
+}
+html, body, #map {
+    height: 100%;
+}
+
+/*CONTENEDOR CENTRAL*/
+#contenedor {
+    display: flex; /* --- permite ubicarlo al centro */
+    /* text-align: left; --- sacandolo no genera ningń efecto */
+    width: 100%;
+    height: 100%;
+    margin: auto;
+}
+/*DIV 1 - Listado de capas*/
+#layers {
+    width: 13%;
+
+    float:left;
+    clear: both;
+}
+/*DIV 2 - Mapa*/
+#map {
+    flex: 1;
+    /*width: 60%;  --- con el parámetro "flex" ya se ocupa el espacio restante */
+    float:right;
+    border-radius: 10px;
+    border: solid 2px rgb(180, 135, 10);
+}
+/*DIV 3 - Datos y Estadísticas*/
+#dashboard {
+    width: 30%;
+    float:right;
+}
+
+/*------------------*/
+/* --- OBJETOS --- */
+/*----------------*/
+
+/*controlador de capas*/
+    /*lista completa*/
+.leaflet-control-layers-list {
+    background-color: rgba(177, 29, 29, 0.8);
+    font-size: 40px;
+    background-color: #c2b60a;
+    width: auto;
+    height: auto;
+    padding: 6px 6px;
+    position: center;
+}
+    /*1° recuadro*/
+.leaflet-control-layers-base {
+    background-color: rgba(255, 255, 255, 0.8);
+    font-size: 10px
+}
+    /*2° recuadro*/
+.leaflet-control-layers-overlays {
+    background-color: rgba(235, 220, 11, 0.8);
+    font-size: 12px
+}
+
+/*leyenda - red vial*/
+.legend {
+    padding: 6px 8px;
+    font: 14px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255, 255, 255, 0.8);
+    /*box-shadow: 0 0 100px rgba(0, 0, 0, 0.2);*/
+    border-radius: 10px;
+    border:1px solid black;
+    line-height: 20px;
+    color: black;
+}
+.legend h4 {
+    text-align: left;
+    font-size: 16px;
+    margin: 2px 40px 8px;
+    color: black;
+}
+                    /*para alinear escrito a símbolo*/
+.legend span {
+    position: relative;
+    bottom: 6px;
+}
+.legend i {
+    width: 20px;
+    height: 5px;
+    float: left;
+    margin: 0 8px 0 0;
+    opacity: 0.7;
+    border:2px solid black;
+}
+/*título general*/
+#titulo1 {
+    text-align: center;
+    width: 100%;
+    height: 0%;
+    margin-left: 1%;
+    margin-top: 1%;
+    margin-bottom:0%
+}
+
+/* Parecería no tener impacto
+.clearfix:after {
+ content: "";
+ display: table;
+ clear: both;
+} */
+
+/*botones de zoom*/
+.leaflet-verticalcenter {
+    position: absolute;
+    z-index: 1000;
+    pointer-events: none;
+    top: 71%;
+    transform: translateY(0%);
+    transform: translateX(0%);
+    padding-top: 10px;
+}
+.leaflet-verticalcenter .leaflet-control {
+    margin-bottom: 10px;
+}
+/*recuadro - listado de capas*/
+.layers_box {  
+    height: 300px;
+    width: 170px;
+    border-radius: 10px;
+    border: solid 1px rgb(180, 135, 10);
+    background-color: rgba(255, 255, 255, 0.596);
+    margin: auto; /*--- parámetro general, usando asi este se puede centrar el cuadro y desactivar los otros "margin"*/
+    margin-top: 50%;
+    /*margin-left: 5%;
+    margin-top: auto; 
+    margin-bottom: 5%*/
+}
+/*recuadro - gráfico de dona*/
+.chartBox2 {  
+    height: 300px;
+    width: 280px;
+    border-radius: 50px;
+    border: solid 2px rgb(180, 135, 10);
+    background-color: rgba(255, 255, 255, 0.596);
+    margin-left: 20%;
+    margin-top: auto; 
+    margin-bottom: 5%
+}
+/*recuadro - gráfico de barras*/
+.chartBox {                        
+    width: 350px;
+    height: auto;
+    padding: 5px;
+    border-radius: 10px;
+    border: solid 2px rgb(180, 135, 10);
+    background: white;
+    margin: auto;
+    /*margin-top: auto;*/ /*--- para manejar espacios con grafico de dona*/
+    margin-bottom:auto
+}
+.sidebar{
+    width: auto;
+    flex: auto;
+    /*background: #ccc;*/
+    margin-top: auto;
+    margin-left: 8%;
+    margin-bottom: 1% 
+}
+.column {
+    flex: 75%
+}
+#pie_pagina {
+    text-align: center;
+    width: 100%;
+    height: 0%;
+    margin-top: 0%;
+    margin-bottom:0%
+}
+
+    </style>
+    </head>
+
+<body>
+    <!-- CONTENEDOR -->
+    <div id="contenedor" class="clearfix">
+        <div id="layers">
+            <div class= "layers_box">
+            </div>    
+        </div>
+        <div id="map"></div>
+        <div id="dashboard">
+            <div id="titulo1">
+            <p><FONT SIZE=3> <b>SIGIV</b></FONT> <FONT SIZE=3> <b>D.P.V. SANTA FE</b></FONT> 
+            </div>           
+            <!-- contenedores de gráficos-->
+            <div class="chartBox2" style="margin-top: 50px;">
+                <canvas id= "myChart2"></canvas> <!--style="position: center;" style="position: relative; height: 10%; width:52%"-->
+                <canvas id= "barras_zonas" width="100" height="50" style="margin-top: 260px;"></canvas>
+            </div>
+                <!--<div class="chartCard">-->
+                    <div class="sidebar">
+                        <select onchange="cambiozona(this)">                       
+                            <option value="z1">Zona 1</option>                             
+                            <option value="z2">Zona 2</option>
+                            <option value="z3">Zona 3</option>
+                            <option value="z4">Zona 4</option>
+                            <option value="z5">Zona 5</option>
+                            <option value="z6">Zona 6</option>
+                            <option value="z7">Zona 7</option>
+                            <option value="z8">Zona 8</option>
+                            <option value="z9">Zona 9</option>
+                            <option value="z10">Zona 10</option>
+                        </select>
+                    </div>
+                    <div class="column">
+                        <div class="chartBox">
+                            <canvas id="myChart" ></canvas>
+                        </div>
+                    </div>
+                    <div id="pie_pagina">
+                        <p> <FONT SIZE=1> Dirección General de Programación - Área Sistemas de Información Geográfica </FONT> </p>
+                    </div>       
+                </div>
+            </div>
+
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src=" https://unpkg.com/leaflet@1.9.3/dist/leaflet.js "></script>
+    <link rel="stylesheet" href=" https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <script src="https://code.jquery.com/jquery-3.2.1.js" ></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script> <!-- para trabajar con fechas-->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.1/chart.min.js"></script> -->
+    <script>
+
+const datos_kmcalzada = [                               
+    {
+        calzada: 'Pavimentada', zonax: {z1:212.646, z2:370.098, z3:630.505, z4:388.665 , z5:494.898, z6:892.468 , z7:373.927 , z8:176.989 , z9:164.83 , z10:511.632}
+    },
+    {
+        calzada: 'Mejorada', zonax: {z1: 11.98, z2: 209.618, z3:317.615, z4:106.509 , z5:70.19 , z6:84.108 , z7:18.874 , z8:39.62 , z9:27.899 , z10:50.789}
+    },
+    {
+        calzada: 'Natural', zonax: {z1: 534.648, z2: 988.241, z3:519.772, z4:672.867 , z5:725.431 , z6:1080.43 , z7:916.134 , z8:1224.73 , z9:1193.98 , z10:211.584}
+    },
+]
+const data = {
+        //labels: ['Pavimentada', 'Mejorada', 'Natural'],
+        //labels: labels,    
+        datasets: [{
+            //label: 'Kms. de calzada por zona',
+            //data: [50, 12, 6, 9, 12, 3, 9],
+            data: datos_kmcalzada,
+            barThickness: 75,
+            borderSkipped: "bottom",
+            borderRadius: 10,
+            backgroundColor: [
+                '#ff0127',
+                '#db6adb',
+                '#ffffff'
+            ],
+            borderColor: [
+                'black',
+                'black',
+                'black',
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    // config 
+    const config = {
+        type: 'bar',
+        data,             // tambien funciona como:  data:data,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false,
+                    position: 'top'
+                },
+                title: {
+                    display: true,
+                    text: 'Total de km. por tipo de calzada según zona'
+                }
+            },
+            interaction: {
+                intersect: true,
+            },
+            scales: {
+                y: {
+                    min: 0,
+                    max: 1300,
+                    beginAtZero: true
+                }
+            },
+            hoverBackgroundColor: [
+                "#eacc07"
+            ]
+        }
+    };
+          
+    // render init block
+    const myChart = new Chart(
+        document.getElementById('myChart'),
+        config
+        );
+        
+        function cambiozona(option) {
+            console.log(option.value);
+            const tipoCalzada = option.value;
+            const zonaData = datos_kmcalzada.map((item) => {      // Buscamos los datos de todas las zonas para el tipo de calzada seleccionado
+                const valorZona = item.zonax[tipoCalzada];
+                return { x: item.calzada, y: valorZona !== undefined ? valorZona : 0 };
+            });
+            if (zonaData.every(data => data.y !== undefined)) {   // Aca vemos si se encontraron datos para el tipo de calzada
+                myChart.data.datasets[0].data = zonaData;         // Aca se actualziza el gráfico con los datos de todas las zonas
+            }
+            myChart.update();
+        }
+
+
+/////////////////////////////////////////////////////////////
+////////////DATOS DE TOTALES para gráficos///////////////////               /////estos datos son erroneos!!!!!!/////
+/////////////////////////////////////////////////////////////
+    // setup 
+    const data2 = {
+        labels: ['Pavimentada (30%)', 'Natural (60%)', 'Mejorada (10%)'],
+        datasets: [{                 
+            data: [4216.658, 8067.817, 937.202], 
+            hoverBackgroundColor: '#eacc07',
+            backgroundColor: [
+                '#ff0127',
+                '#ffffff',
+                '#db6adb'
+            ],
+            borderColor: [
+                'black',
+                'black',
+                'black',
+            ],
+            borderWidth: 2,
+            hoverOffset: 4,
+        }]
+    };
+
+/////////////////////////////////////////////////////////////
+////////////TOTALES GENERALES x calzada (dona)///////////////
+/////////////////////////////////////////////////////////////
+    // config 
+    const config_dona = {
+        type: 'doughnut',
+        data: data2,
+        options: {
+            plugins:{
+                title: {
+                    display: true,
+                    text: 'Total de km. por tipo de calzada'
+                },
+                legend: {
+                    display: true,
+                    position: 'right',
+                    fullSize: true,
+                    labels:{
+                        padding: 4,
+                        boxHeight: 5,
+                        boxWidth: 25
+                    },
+                },
+            },
+            interaction: {
+                intersect: true,
+            },
+            responsive: true
+        }
+    };
+    // render init block
+    const myChart2 = new Chart(
+        document.getElementById('myChart2'),
+        config_dona
+        );
+
+//////////////////////////////////////////////////////////////////////////
+////////////////////////////   VARIABLES   //////////////////////////////
+////////////////////////////////////////////////////////////////////////
+    var visor               // Visor
+    var mapas_base          // Mapas Base
+    var mb_carto            // Mapa Base de CARTO
+    var mb_esri_satelite    // Mapa Base Satelital de ESRI
+    var mb_ign_argenmap     // Mapa Base IGN
+    var mb_ign_topografico  // Mapa Base Topográfico de IGN
+    var redvial
+    var calzada             // Calzadas
+    var wmszonas
+    var wmsdepartamentos
+    var wmsdistritos
+    var wmslocalidades_parajes
+
+
+//////////////////////////////////////////////////////////////////////////
+////////////////////////////   MAPAS BASE   /////////////////////////////
+////////////////////////////////////////////////////////////////////////    
+
+// Mapa Base CARTO
+var mb_carto = L.tileLayer('https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: 'DPV Santa Fe - Área de SIG | © CARTO'
+});
+  
+// Mapa Base ESRI Satelite
+var mb_esri_satelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 19,
+    attribution: '© ESRI Imagery/Satellite'
+});
+
+// Mapas Base IGN
+var mb_ign_argenmap = L.tileLayer('https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{-y}.png', {
+    maxZoom: 19,
+    attribution: '<a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> | <a href="http://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2" target="_blank">Instituto Geográfico Nacional</a> + <a href="http://www.osm.org/copyright" target="_blank">OpenStreetMap</a>'
+});
+
+var mb_ign_topografico = L.tileLayer('https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/mapabase_topo@EPSG%3A3857@png/{z}/{x}/{-y}.png', {
+    maxZoom: 19,
+    attribution: '<a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> | <a href="http://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2" target="_blank">Instituto Geográfico Nacional</a> + <a href="http://www.osm.org/copyright" target="_blank">OpenStreetMap</a>'
+});   
+
+// Mapas Base -> "Layer Group"
+var mapas_base = {
+   "CARTO": mb_carto,
+   "ESRI: Satellite": mb_esri_satelite,
+   "IGN: Argenmap": mb_ign_argenmap,
+   "IGN: Topográfico": mb_ign_topografico
+};
+
+// MAPA CENTRADO EN SANTA FE
+var visor = L.map('map',{
+    zoomSnap: 0.1,
+    layers: [mb_carto],
+    renderer: L.canvas({ tolerance: 10 })    //---> propiedad que amplia el radio de selección con el mouse para todas las capas
+}).setView([-31.25, -61], 6.9);
+
+
+//////////////////////////////////////////////////////////////////////////////// 
+////////////////////////////  CAPAS - WMS   ///////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+//   Zonas WMS   
+var wmszonas = L.tileLayer.wms('http://10.7.20.214:8080/geoserver/sigiv/wms?', {
+    layers: 'zonas',
+    format: 'image/png',
+	transparent: true,
+	version: '1.3.0'
+	}).addTo(visor); 
+
+//   Departamentos WMS 
+var wmsdepartamentos = L.tileLayer.wms('http://10.7.20.214:8080/geoserver/sigiv/wms?', {
+    layers: 'departamentos',
+    format: 'image/png',
+	transparent: true,
+	version: '1.3.0'
+	}).addTo(visor);
+
+//   Distritos WMS 
+var wmsdistritos = L.tileLayer.wms('http://10.7.20.214:8080/geoserver/sigiv/wms?', {
+    layers: 'distritos',
+    format: 'image/png',
+	transparent: true,
+	version: '1.3.0'
+	}).addTo(visor);
+
+//   Localidades y Parajes WMS
+var wmslocalidades_parajes = L.tileLayer.wms('http://10.7.20.214:8080/geoserver/sigiv/wms?', {
+    layers: 'localidades_parajes',
+    format: 'image/png',
+	transparent: true,
+	version: '1.3.0'
+	}).addTo(visor);
+
+
+//////////////////////////////////////////////////////////////////////////////// 
+////////////////////////////  CAPAS - WFS   ///////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+//////////////////
+////  PUENTES WFS 
+var puentes = 'http://10.7.20.214:8080/geoserver/sigiv/wfs?';
+    var defaultParameters = {
+        service: 'WFS',
+        version: '2.0.0',
+        request: 'GetFeature',
+        typeName: 'sigiv:puentes_v2',
+        srsname: 'EPSG:4326',
+        outputFormat: 'application/json',
+    };
+    var parameters = L.Util.extend(defaultParameters);
+    var URL = puentes + L.Util.getParamString(parameters);
+
+    //- - > inicio LLAMADA AJAX
+var ajax_puentes = $.ajax({
+	url: URL,
+	success: function (data) {		
+			var ajax_puentes = new L.geoJson(data, {
+                style: function (feature) {
+                    return {color: orange, opacity: 0.1, fillOpacity: 0.1, weight: 1};
+                },
+				onEachFeature: function(feature, layer) {
+                },
+                //  pane: "puentesPane"
+			}).bindPopup(function (layer) {
+    				return (`<b> Identificador.: </b>` + layer.feature.properties.iddpv
+                    )    
+			}).addTo(visor).bringToBack();
+			layercontrol_bases.addOverlay(puentes, "Puentes");
+				 						
+            //- - > CIERRE llamada Ajax
+			}
+		});
+
+///////////////////
+////  CALZADAS WFS 
+    //- - > estilos para calzadas "style"
+function style(feature) {
+    var c;
+    switch (feature.properties.dpv_cal) {
+        case 'Natural': c = '#ffffff'; break;
+        case 'Mejorada': c = '#db6adb'; break;
+        case 'Pavimentada': c = '#ff0127'; break;
+        default: c = '#000000';
+    }
+    return {color: c, opacity: 1, weight: 2};
+}
+	var highlight = {
+		'fillColor': '',
+        'color': 'yellow',    //---> si se activa usa el color amarillo, 
+                                  //pero si usamos solo el parámetro 'fillColor' permite resaltar con el propio color del vector, además
+                                  //no desaparece la seleccion con el zoom pero deja de hacer efecto el 'height'
+		'weight': 10,
+		'opacity': 1,
+        /*'permanent': false*/    //---> no funciona
+	};
+
+    //- - > datos para llamada de capa
+var redvial = 'http://10.7.20.214:8080/geoserver/sigiv/wfs?';
+    var defaultParameters = {
+        service: 'WFS',
+        version: '2.0.0',
+        request: 'GetFeature',
+        typeName: 'sigiv:sf_dpv_dnv_redvial_221227_5347',
+        srsname: 'EPSG:4326', ///rever si en este SRC o en otro
+        outputFormat: 'application/json'
+    };
+    var parameters = L.Util.extend(defaultParameters);
+    var URL = redvial + L.Util.getParamString(parameters);
+
+    //- - > inicio LLAMADA AJAX
+var ajax_rutas = $.ajax({
+    url: URL,
+    success: function (data) {
+    //- - > OUTLINE - estilo borde (documentación leaflet (https://leafletjs.com/reference.html#path-option) y posts leídos comentan que no se puede trabajar el "edge")
+    var outline = new L.geoJson(data, {                           
+        style: function (feature) {
+            return {color: 'black', opacity: 1, weight: 3};
+        }
+    }).addTo(visor);
+
+    //- - > OUTLINE - zoom
+    visor.on('zoomend', function () {
+        currentZoom = visor.getZoom();
+        if (currentZoom >= 7) {
+            outline.setStyle({weight: 3});
+        }
+        else {
+            outline.setStyle({weight: 0});
+        }
+    });
+
+    visor.on('zoomend', function() {
+        if (visor.getZoom() >= 7){
+            visor.addLayer(outline);
+        }		
+        else {
+            visor.removeLayer(outline);
+        }
+    });
+
+    //- - > calzada - ESTILO
+    var calzada = new L.geoJson(data, {
+        // pane: "calzadaPane", ---> este parámetro estaba en el código. Al sacarlo las rutas se cargan con el estilo y pop-ups etc. 
+        style: style,
+        onEachFeature: function (feature, layer) {
+            layer.on("click", function (e) {
+                calzada.setStyle(style); //setea segun colores de la función "style" declarada previamente
+                layer.setStyle(highlight);  //permite la selección con la variable "highlight" de la función "sytle"
+            });
+        },
+    }).bindPopup(function (layer) {                                           //---> PROPIEDAD PARA POP-UP
+        return ('<b>' + layer.feature.properties.fna + '</b>' + '<br>' +
+        '<FONT COLOR="grey">' + '<b>' +' Long: ' + '</b>' + '</FONT>' + layer.feature.properties.len + ' km.' + '<br>' +
+        '<FONT COLOR="grey">' + '<b>' +' Inicio de tramo: ' + '</b>' + '</FONT>' + layer.feature.properties.dpv_tram_i + '<br>' +
+        '<FONT COLOR="grey">' + '<b>' + ' Fin de tramo: ' + '</b>' + '</FONT>' +layer.feature.properties.dpv_tram_f + '<br>' +
+        '<FONT COLOR="grey">' + '<b>' + ' Interrupción: ' + '</b>' + '</FONT>' +layer.feature.properties.dpv_itr)      
+    }).addTo(visor);
+
+    //- - > calzada - ZOOM
+    visor.on('zoomend', function () {
+        currentZoom = visor.getZoom();
+        if (currentZoom >= 7) {
+            calzada.setStyle({weight: 2});
+        }
+        else {
+            calzada.setStyle({weight: 0});
+        }
+    });
+
+    visor.on('zoomend', function() {
+        if (visor.getZoom() >= 7){
+            visor.addLayer(calzada);
+        }
+        else {
+            visor.removeLayer(calzada);
+        }
+    });
+
+    //- - > ETIQUETAS "nam" - ZOOM
+    visor.on('zoomstart', function () {
+        try{
+            var zoomLevel = visor.getZoom();
+            console.log(zoomLevel);
+            var tooltip = $('.label');
+            console.log("zoomLevel");
+            console.log(zoomLevel);
+            switch (zoomLevel) {
+                default: tooltip.css('font-size', 0)
+                if(zoomLevel>5) {
+                    tooltip.css('font-size', 10);
+                }
+                if(zoomLevel>13)
+                {
+                    tooltip.css('font-size',20);
+                }
+            }
+        }catch(ex)
+        {
+            alert(ex); 
+        }
+    });
+    //- - > CIERRE llamada Ajax
+    }
+});
+
+
+
+//////////////////////////////////////////////////////////////////////////////// 
+////////////////////////////  FUNCIONALIDADES   ///////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+////// LEYENDA Rutas
+var legend = L.control({ position: "bottomleft" });
+legend.onAdd = function(visor) {
+  var div = L.DomUtil.create("div", "legend");
+  div.innerHTML += "<h4>Red Vial</h4>";
+  div.innerHTML += '<i style="background: #FF0127"></i><span>Pavimentada</span><br>';
+  div.innerHTML += '<i style="background: #DB6ADB"></i><span>Mejorada</span><br>';
+  div.innerHTML += '<i style="background: #ffffff"></i><span>Natural</span><br>';
+  return div;
+};
+legend.addTo(visor);
+
+////// ESCALA
+L.control.scale({
+    metric: true, imperial: false,
+    position: 'bottomright'
+}).addTo(visor);
+
+////// BOTONES ZOOM
+function addControlPlaceholders(visor) {
+    var corners = visor._controlCorners,
+    l = 'leaflet-',
+    container = visor._controlContainer;
+    function createCorner(vSide, hSide) {
+        var className = l + vSide + ' ' + l + hSide;
+        corners[vSide + hSide] = L.DomUtil.create('div', className, container);
+    }
+    createCorner('verticalcenter', 'left');
+    createCorner('verticalcenter', 'right');
+}
+addControlPlaceholders(visor);
+visor.zoomControl.setPosition('verticalcenterleft'); // Change position of the Zoom Control to a newly created placeholder
+
+
+////// Capas Base -> "Layer Group"
+var wms_capas = {
+   "Zonas": wmszonas,
+   "Departamentos": wmsdepartamentos,
+   "Distritos": wmsdistritos,
+   "Localidades y Parajes": wmslocalidades_parajes
+};
+
+////// CONTROLADOR mapas y capas base -> "Layer Control"
+var layersBox = document.querySelector('.layers_box'); // ---> este método selecciona al div - clase layers_box
+var layercontrol_bases = L.control.layers(mapas_base, wms_capas, {
+collapsed: false,
+position: 'topleft'
+});
+layercontrol_bases.addTo(visor); // ---> esta parte permite la vinculacion, pero no entiendo porque funciona porque no esta agregado a "visor"
+layersBox.appendChild(layercontrol_bases.getContainer());
+
+</script>
+
+</body>
+</html>
