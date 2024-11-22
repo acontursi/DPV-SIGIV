@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PARA EVALUAR - DPV SIGIV | Sistema de Información Geográfica Integral Vial</title>
+
+<!--CSS - ESTILOS-->
+  <!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
+  <!--sidebar-->  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2/css/leaflet-sidebar.min.css"/>
+  <!--groupedlayercontrol-->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-groupedlayercontrol/0.6.1/leaflet.groupedlayercontrol.min.css" />
+  <!--SearchControl - Stefano Cudini-->
+<link rel="stylesheet" href="leaflet-search-master/src/leaflet-search.css"/>
+  <!--SwitchBasemaps - Juan Clavijo-->
+<link rel="stylesheet" href="L.switchBasemap-master/src/L.switchBasemap.css"/>
+  <!--OpacityControl - Yasunori Kirimoto-->
+<link rel="stylesheet" href="Leaflet.Control.Opacity-master/dist/L.Control.Opacity.css"/>
+  <!--Fuente íconos - ícono BIENVENIDO/HOME-->
+<link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <!--Full Screen - Bruno B.-->
+<link rel="stylesheet" href="leaflet.fullscreen-master/Control.FullScreen.css"/>
+  <!--Datepicker - Anton Steketee-->
+<link rel="stylesheet" href="Leaflet.Datepicker-main/dist/style.css"/>
+<!-- Leaflet Draw -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.3.2/leaflet.draw.css"/>
+<!-- Leaflet Measure Control -->
+<link rel="stylesheet" href="Leaflet.MeasureControl-master/leaflet.measurecontrol.css"/>
+
+<!--PLUGINS-->
+  <!--jQuery-->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!--Debe estar antes de cualquier script que intente usar $-->
+  <!--LEAFLET si o si-->
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <!--Leaflet sidebar-v2-->
+<script src="https://cdn.jsdelivr.net/npm/leaflet-sidebar-v2/js/leaflet-sidebar.min.js"></script>
+  <!--groupedlayercontrol-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-groupedlayercontrol/0.6.1/leaflet.groupedlayercontrol.min.js"></script>
+  <!--SearchControl - Stefano Cudini-->
+<script src="leaflet-search-master/src/leaflet-search.js"></script>
+  <!--SwitchBasemaps - Juan Clavijo-->
+<script src="L.switchBasemap-master/src/L.switchBasemap.js"></script>
+  <!--OpacityControl - Yasunori Kirimoto-->
+<script src="Leaflet.Control.Opacity-master/dist/L.Control.Opacity.js"></script>
+  <!--Full Screen - Bruno B.-->
+<script src="leaflet.fullscreen-master/Control.FullScreen.js"></script>
+  <!--Datepicker - Anton Steketee-->
+<script src="Leaflet.Datepicker-main/dist/leaflet-datepicker.umd.cjs"></script>
+<!-- Leaflet Draw -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.3.2/leaflet.draw.js"></script>
+<!-- Leaflet Measure Control - Maxime Bouveron-->
+<script src="Leaflet.MeasureControl-master/leaflet.measurecontrol.js"></script>
+<!-- Leaflet Browser Print - Igor Vladyka-->
+<script src="leaflet.browser.print-master/dist/leaflet.browser.print.min.js"></script>
+
+
+</head>
+
+<style>
+body { padding: 0; margin: 0; }
+html, body { height: 100%; }
+
+/*TÍTULO GENERAL*/
+#titulo1 {
+  height: 10%; background-image: url(img/ruta9b.jpg); background-repeat:no-repeat; background-size: cover;
+  /*border: 5px solid #ecb404;*/ position:relative; display: flex; justify-content: center; align-items: center;
+}
+.logo-vialidad {width: 170px; max-height: 100%;}
+.logo-sigiv {width: 100px; max-height: auto; margin-right: 50px;}
+.logo-provincia {width: 300px; max-height: 100%; margin-left: 50px;}
+
+/*DIV - CONTENEDOR CENTRAL*/
+#contenedor {display: flex; width: 100%; height: 90%; margin: auto;}
+
+/*DIV - Mapa*/
+#map {width: 75%, auto; flex: 70%; float: right; border: transparent /*solid 4px rgb(180, 135, 10)*/; 
+      /*width: 60%;  --- con el parámetro "flex" ya se ocupa el espacio restante */
+}
+    /*buscadores puentes y rutas*/
+.leaflet-control-search .search-button:hover{
+  background-color: rgba(236, 180, 4, 0.5);
+}
+.leaflet-control-search {box-shadow: none/*0 1px 3px rgba(243, 200, 8, 0.65)*/;}
+    /*buscador de puentes*/
+/*.leaflet-control-search:nth-child(1) > a:nth-child(5){
+  background-image: url(leaflet-search-master/images/puente.png);
+  background-size: 15px 15px; background-position: center; background-repeat: no-repeat;
+}*/
+    /*buscador de rutas*/
+.leaflet-control-search:nth-child(1) {margin-top: 130%;}
+.leaflet-control-search:nth-child(1) > a:nth-child(5){
+  background-image: url(leaflet-search-master/images/ruta.png); 
+  background-size: 15px 15px; background-position: center; background-repeat: no-repeat;
+}
+    /*boton full screen*/
+/*.leaflet-bottom:nth-child(4) > div:nth-child(1){}*/
+
+    /*boton medicion*/
+.leaflet-control-draw-measure {
+  background-image: url(Leaflet.MeasureControl-master/images/regla-vertical.png); background-size: 15px;
+}
+.leaflet-div-icon {
+  background-color: rgb(255, 255, 255); /* Cambia el color de fondo */
+  border-radius: 50%; /* Hacerlos redondos */ border: 1px solid rgb(0, 0, 0);
+}
+
+/*SIDEBAR*/
+.leaflet-sidebar-tabs img {   /*Permite visualización de imágenes (configuramos en divs)*/
+  display:inline-block; text-align:end; /*width: 100%; height: auto;*/
+}
+.popup_pags {   /*Popup para íconos*/
+  display: none; position: absolute; background-color: #ecb404; color: #fff; 
+  padding: 8px; border-radius: 5px; z-index: 1000 /*lo trae adelante*/;
+}
+
+.lorem1 { font-style: normal; color: #000; font-weight: bold; }
+.lorem2 { font-style: normal; color: #777; }
+.leaflet-sidebar-content {max-width: max-content; background-color: white;/*background-color: transparent;*/}
+.leaflet-control-scale-line { margin-left: 5px; width: 5px;}
+.leaflet-touch .leaflet-control-layers, .leaflet-bar {
+  margin-top: 5px; border: transparent;
+  /*border: 5px solid rgba(49, 5, 5, 0.2);*/ /*background-clip: padding-box;*/ /*background-color: rgb(194, 167, 17);*/
+}
+.leaflet-sidebar-tabs{/*background-color: transparent;*/ background-color: white /*rgb(175, 145, 63)*/;}
+
+    /*- -texto inferior*/
+.leaflet-control-layers-label{font-style: italic;}
+    /*- -icono 1 casa*/
+.material-symbols-outlined {font-variation-settings:'FILL' 0,'wght' 800,'GRAD' -25,'opsz' 24; vertical-align: middle;}
+         /*activo*/
+.leaflet-sidebar-left.leaflet-touch div.leaflet-sidebar-tabs ul li.active{
+color: #000;
+}
+         /*titulo 1*/
+#Bienvenido > h1:nth-child(1){background-color: #eeeeee; color: #000;}
+         /*activo*/
+.leaflet-sidebar-tabs > ul:nth-child(1) > li.active{background-color: #eeeeee;}
+#Bienvenido > p:nth-child(5) > a:nth-child(3){text-decoration:none;}
+
+    /*- -icono 2 capas*/
+.leaflet-sidebar-tabs > ul:nth-child(1) > li:nth-child(2) > a:nth-child(1) > img:nth-child(2){vertical-align: middle;}
+         /*titulo 2*/
+#layers > h1:nth-child(1){background-color: #eeeeee; color: #000;}
+
+    /*- -icono 3 mundo*/
+         /*titulo 3*/
+#geoservicios > h1:nth-child(1){background-color: #eeeeee; color: #000;}
+        /*botones geoservicios*/
+p.boton_geoservicio{border: solid; border-color: #ecb404; background-color: rgba(236, 180, 4, 0.5);
+  border-radius: 20%; width: max-content;}
+.leaflet-sidebar-tabs > ul:nth-child(1) > li:nth-child(3) > a:nth-child(1) > img:nth-child(2){ vertical-align: middle;}
+
+    /*espacio vacio*/
+#none > h1:nth-child(1){background-color: none; color: none;}
+#none a{pointer-events: none;}
+        
+/*DIV - Panel Estadísticas*/   /* ---> PANEL SACADO*/
+/*#panel_estadisticas {
+  text-align: center; width: 25%; height: auto; float: right;
+  padding: 10px; border: 5px solid  #ecb404; border-radius: 5%; background-color: #eee;
+}
+.titulo_est{
+  margin-top: 0.001rem; color: white;
+  text-shadow: 1px  0px 0px black,
+               0px  1px 0px black,
+              -1px  0px 0px black,
+               0px -1px 0px black;
+  font-size: 18px; font-family:Verdana, Geneva, Tahoma, sans-serif
+}*/
+
+</style>
+
+<body>
+<!-- CONTENEDORES -->
+<div class="popup_pags" id="popup_transito">Tránsito</div>
+<div class="popup_pags" id="popup_evaluacion">Evaluación</div>
+<div class="popup_pags" id="popup_inventario">Inventario</div>
+<!--TITULO-->
+<div id="titulo1">
+  <!-- <div id="titulo1_a">SIGIV</div> -->
+  <img src="img/logos/logo dpv 2024.png" alt="logo_vialidad" class="logo-vialidad">
+  <img src="img/logos/sigiv_trans_amarillo.png" alt="logo_sigiv" class="logo-sigiv">
+  <img src="img/logos/Min. Obras publicas logo png.png" alt="logo_provincia" class="logo-provincia">
+</div>  
+<!--GENERAL-->
+<div id="contenedor" class="clearfix">
+  <!--MAPA (visor)-->
+  <div id="map" class="sidebar-map"></div>
+    <!--Barra izquierda--> 
+  <div id="sidebar" class="leaflet-sidebar collapsed">
+    <div class="leaflet-sidebar-tabs">
+      <ul role="tablist">
+        <li><a href="#Bienvenido" role="tab"><i class="fa fa-bars"></i><span class="material-symbols-outlined">home</span></a></li>
+        <li><a href="#layers" role="tab"><i class="fa fa-sliders"></i><img src="img/capasnegro.png" alt="Simbolo capas" width="20px"></a></li>
+        <li><a href="#geoservicios" role="tab"><i class="fa fa-sliders"></i><img src="img/mundo.png" alt="Simbolo geoservicios" width="20px"></a></li>
+        <li id="none"><a href="#none"></a></li>
+        <li><a id="transito_pophtml" href="transito.html"><img src="img/vehiculos.png" width="20px"></a></li>
+        <li><a id="evaluacion_pophtml" href="evaluacion.html"><img src="img/regla.png" width="20px"></a></li>
+        <li><a id="inventario_pophtml" href="inventario.html"><img src="img/lista.png" width="20px"></a></li>
+      </ul>
+    </div>
+    <div class="leaflet-sidebar-content">
+    <div class="leaflet-sidebar-pane" id="Bienvenido">
+      <h1 class="leaflet-sidebar-header">Bienvenido<span class="leaflet-sidebar-close"><i class="fa fa-caret-left">
+      </i></span></h1>
+        <p class="lorem1" style="text-align: center;">DIRECCIÓN PROVINCIAL DE VIALIDAD - SANTA FE<br>
+        DIRECCIÓN DE PROGRAMACIÓN<br>
+        ÁREA DE SISTEMAS DE INFORMACIÓN GEOGRÁFICA</p>
+        <p class="lorem2" style="text-align: justify;">En el presente geovisor se recopilan datos para elaborar información 
+          acerca de los eventos que sean de interés a la dirección como también la elaboración de estadísticas pertinentes 
+          para la toma de decisiones basadas en evidencia de datos</p>
+        <p style="color: #777272; font-style: italic; text-align: justify;">Considere que los datos publicados pueden verse 
+          desactualizados por lo que se ruega sean tratados a modo de consulta. Para estudios o 
+          necesidades concretas corrobore contactándose con la dirección.<br>Los datos brindados sirven 
+          como guía a fines prácticos de publicación de la información pública según Ley Nacional N° 27275 
+          "DERECHO DE ACCESO A LA INFORMACIÓN PÚBLICA"</p>
+          <p><b>Datos de Contacto</b><br>
+            <a href="https://www.santafe.gov.ar/index.php/web/content/view/full/239909">Sitio Web</a><br>
+            Dirección: Bv. Muttis 880 - 3000 - Santa Fe<br>Teléfono: 0342 4573962<br>E-mail: privadadpv@santafe.gob.ar</p>
+            <br><br><br><br><br>
+        <p style="color: #bea200;">Desarrolladores SIG:<br>---<b>Adrián Contursi</b><br>---<b>Andrés Ignacio Aguirre</b></p>
+    </div>
+    <div class="leaflet-sidebar-pane" id="layers">
+    <h1 class="leaflet-sidebar-header">Capas<span class="leaflet-sidebar-close">
+      <i class="fa fa-caret-left"></i></span></h1>
+    </div>
+    <div class="leaflet-sidebar-pane" id="geoservicios">
+    <h1 class="leaflet-sidebar-header">Geoservicios<span class="leaflet-sidebar-close">
+      <i class="fa fa-caret-left"></i></span></h1>
+      <p style="color: #777272; text-align: justify;">En esta sección se pone a disposición diferentes servicios 
+        de información geoespacial según estándares de OGC (Open Geospatial Consortium – OGC) disponibles para su utilización.</p>
+        <br><br><br>
+        <p class="boton_geoservicio"><b>WMS</b></p><p class="boton_geoservicio"><b>WFS</b></p>
+        <p class="boton_geoservicio"><b>CSW</b></p><p class="boton_geoservicio"><b>WFST</b></p>
+    </div>
+    </div>
+  </div>
+  <!--  <div id="panel_estadisticas">              // PANEL SACADO
+    <h2 class="titulo_est">Estadísticas</h2>
+    <div id="layerInfo"></div>
+  </div>--->
+</div>
+
+<script> 
+
+//FUNCIÓN para pop-up de elementos side-bar HTML (www.geeksforgeeks.org/how-to-open-a-popup-on-hover-using-javascript/)
+  document.addEventListener('DOMContentLoaded', () => {
+    function addPopup(elementId, popupId) {
+    const element = document.getElementById(elementId);
+    const popup = document.getElementById(popupId);
+    
+    if (element && popup) {
+      element.addEventListener('mouseenter', () => {
+        popup.style.display = 'block';
+        // Aca se posiciona el popup a la derecha del icono
+        const rect = element.getBoundingClientRect();
+        popup.style.top = `${rect.top + window.scrollY}px`;
+        popup.style.left = `${rect.left + window.scrollX + element.offsetWidth}px`;});
+      element.addEventListener('mouseleave', () => {
+        popup.style.display = 'none';});
+    } else {console.error('No se encontraron los elementos ${elementId} o ${popupId}.');}
+  }
+
+  addPopup('transito_pophtml', 'popup_transito');
+  addPopup('evaluacion_pophtml', 'popup_evaluacion');
+  addPopup('inventario_pophtml', 'popup_inventario');
+});
+
+</script>
+
+
+<script src= "js/script_capas.js"></script>
+<script src= "js/script_capas_wfs.js"></script>
+
+</body>
+</html>
+
+
