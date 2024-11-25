@@ -1,0 +1,11 @@
+.*
+.*.json
+tsconfig.json
+tests
+demo
+coverage
+examples
+rollup.config.js
+vite.config.js
+cypress*
+*.tgz

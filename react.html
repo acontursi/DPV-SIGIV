@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>REACT</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+</head>
+
+<style>
+  .HolaMundo{
+    text-decoration: dashed;
+    color: #009;
+  }
+</style>
+
+<body>
+
+<div id="app"></div>
+
+<script>
+  class HolaMundo extends React.Component{
+
+    render() {
+      return React.createElement('p',{},'Hola mundo');
+    }
+  }
+
+  const domContainer = document.querySelector('#app');
+  const root = ReactDOM.createRoot(domContainer);
+  root.render(React.createElement(HolaMundo))
+</script>
+
+</body>
+</html>
+
+
+
